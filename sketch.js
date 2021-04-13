@@ -55,7 +55,7 @@ function draw(){
   image(mirrorImg, 34, 37, mirrorImg.width*2, mirrorImg.height*2);
   fill(255, backSlider.value());
   rect(34, 37, videoSize.w, videoSize.h);
-  image(back, 34, 447);
+  image(back, 34, 450);
   fs = fullscreen();
   if(!fs){
     image(brick, -brick.width/2, videoSize.h-brick.height*1.7);
@@ -96,10 +96,15 @@ function draw(){
     }
     penguin.show(hit);
   }
+  stroke('#FFFF00');
+  strokeWeight(6);
   fill(0);
   textSize(60);
-  text('SCORE : '+score, 40, 90);
-  if(score >= 200){
+  textAlign(LEFT);
+  text('SCORE : '+score, 45, 90);
+  noStroke();
+  strokeWeight(1);
+  if(score >= 150){
     textSize(127);
     textAlign(CENTER, CENTER);
     strokeWeight(10);
@@ -108,7 +113,7 @@ function draw(){
     text('미션 클리어 !!!!', videoSize.w/2+34, videoSize.h/2+37);
     bgm.stop();
     noLoop();
-  }else if(score <= -50){
+  }else if(score <= -30){
     textSize(127);
     strokeWeight(10);
     stroke(255);
@@ -191,6 +196,7 @@ function screen(){
   });
   stopBtn.mousePressed(() => {
     score = 0;  
+    bgm.stop();
     noLoop();
   });
 }
