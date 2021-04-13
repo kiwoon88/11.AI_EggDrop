@@ -1,5 +1,4 @@
 let fs;
-let logo;
 let back;
 let poseNet;
 let poses = [];
@@ -15,13 +14,17 @@ let brick;
 let penguin;
 let hit = false;
 let score = 0;
+let sound0;
+let sound1;
+let bgm;
 
 function preload(){
-  logo = loadImage('image/logo.png');
-  slide = loadImage('image/slide03.png');
+  slide = loadImage('image/slide11.png');
   brick = loadImage('image/box.png');
   back = loadImage('image/backimg.png');
-
+  sound0 = loadSound('sound0.mp3');
+  sound1 = loadSound('sound1.mp3');
+  bgm = loadSound('babyshark.mp3');
   for(let i=0; i<egg.length; i++){
     egg[i] = new Egg(i);
   }
@@ -39,34 +42,27 @@ function setup(){
   video = createCapture(VIDEO);
   video.size(640, 480);
   video.hide();
-  poseNet = ml5.poseNet(video);
+  bgm.loop(true);
+  bgm.setVolume(0.2);
+  poseNet = ml5.poseNet(video, 'single');
   poseNet.on('pose', gotResult);
 }
 
 function draw(){
   clear();
-  image(slide, videoSize.w, 0);
+  image(slide, 0, 0);
   mirrorCam();
-  image(mirrorImg, 0, 0, mirrorImg.width*2, mirrorImg.height*2);
+  image(mirrorImg, 34, 37, mirrorImg.width*2, mirrorImg.height*2);
   fill(255, backSlider.value());
-  rect(0, 0, videoSize.w, videoSize.h);
-  noStroke();
-  fill(255, backSlider.value());
-  rect(0, 0, videoSize.w, videoSize.h);
-  fill('#1F1F1FA0');
+  rect(34, 37, videoSize.w, videoSize.h);
+  image(back, 34, 447);
   fs = fullscreen();
   if(!fs){
-    image(back, 0, 300);
-    rect(0, 850, mirrorImg.width*2, height);
-    image(logo, 0, 770);
     image(brick, -brick.width/2, videoSize.h-brick.height*1.7);
     image(brick, videoSize.w-brick.width/2, videoSize.h-brick.height*1.7);
   }else{
-    image(back, 0, 400);
-    rect(0, 950, mirrorImg.width*2, height);
-    image(logo, 0, 880);
-    image(brick, -brick.width/2, videoSize.h-brick.height);
-    image(brick, videoSize.w-brick.width/2, videoSize.h-brick.height);    
+    image(brick, -brick.width/2, videoSize.h-brick.height*0.7);
+    image(brick, videoSize.w-brick.width/2, videoSize.h-brick.height*0.7);    
   }
   for(let i = 0; i < poses.length; i++){
     if(mirror){
@@ -85,6 +81,7 @@ function draw(){
     if(hit){
       score += 10;
       egg[i].y = height+100;
+      sound0.play();
     }
     penguin.show(hit);
   }
@@ -95,12 +92,33 @@ function draw(){
     if(hit){
       score -= 10;
       trash[i].y = height+100;
+      sound1.play();
     }
     penguin.show(hit);
   }
   fill(0);
-  textSize(50);
-  text('SCORE : '+score, 0, 50);
+  textSize(60);
+  text('SCORE : '+score, 40, 90);
+  if(score >= 200){
+    textSize(127);
+    textAlign(CENTER, CENTER);
+    strokeWeight(10);
+    stroke(255);
+    fill('#00FF00');
+    text('미션 클리어 !!!!', videoSize.w/2+34, videoSize.h/2+37);
+    bgm.stop();
+    noLoop();
+  }else if(score <= -50){
+    textSize(127);
+    strokeWeight(10);
+    stroke(255);
+    fill('#FF0000');
+    textAlign(CENTER, CENTER);
+    text('미션 실패 !!!!', videoSize.w/2+34, videoSize.h/2+37);
+    bgm.stop();
+    noLoop();
+  }
+  
 }
 
 function gotResult(results){
@@ -142,12 +160,18 @@ function mirrorCam(){
 function screen(){
   screenBtn = createButton(' 전체화면 ');
   mirrorBtn = createButton(' 화면반전 ');
-  backSlider = createSlider(0, 255, 200, 5);
-  screenBtn.position(1400, 200);
-  mirrorBtn.position(1555, 200);
-  backSlider.position(1400, 250);
-  screenBtn.size(150, 30);
-  mirrorBtn.size(150, 30);
+  newBtn = createButton(' 새게임 ');
+  stopBtn = createButton(' 게임중지 ');
+  backSlider = createSlider(0, 255, 0, 5);
+  screenBtn.position(1400, 230);
+  mirrorBtn.position(1505, 230);
+  newBtn.position(1610, 230);
+  stopBtn.position(1715, 230);
+  backSlider.position(1470, 280);
+  screenBtn.size(100, 30);
+  mirrorBtn.size(100, 30);
+  newBtn.size(100, 30);
+  stopBtn.size(100, 30);
   backSlider.size(300);
   screenBtn. mousePressed(() => {
     fs = fullscreen();
@@ -160,6 +184,15 @@ function screen(){
     }
   });
   mirrorBtn.mousePressed(() => {mirror=~mirror;});
+  newBtn.mousePressed(() => {
+    score = 0;  
+    bgm.play();
+    loop();
+  });
+  stopBtn.mousePressed(() => {
+    score = 0;  
+    noLoop();
+  });
 }
 
 function wait(){

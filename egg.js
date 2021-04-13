@@ -3,10 +3,10 @@ class Egg {
     this.img = loadImage('image/egg'+a+'.png');
     this.x = random(50, 1100);
     this.y = -floor(random(100, 600));
-    this.s = random(0.4, 1.3);
+    this.s = random(0.4, 1.1);
     this.w = floor(this.img.width*this.s);
     this.h = floor(this.img.height*this.s);
-    this.speed = floor(random(1, 6));    
+    this.speed = floor(random(2, 8));    
     this.fs = fullscreen();
   }
 
@@ -15,7 +15,7 @@ class Egg {
     if(this.y > height-this.h){
       this.x = floor(random(50, 1100));
       this.y = -floor(random(100, 400));
-      this.s = random(0.4, 1.3);
+      this.s = random(0.4, 1.1);
       this.w = floor(this.img.width*this.s);
       this.h = floor(this.img.height*this.s);
     }
@@ -37,7 +37,7 @@ class Trash {
     this.s = random(0.4, 1.3);
     this.w = floor(this.img.width*this.s);
     this.h = floor(this.img.height*this.s);
-    this.speed = floor(random(1, 6));    
+    this.speed = floor(random(2, 8));    
     this.fs = fullscreen();
   }
 
@@ -82,12 +82,8 @@ class Penguin {
     if(!this.fs){
       this.y = 960-this.img0.height;
     }else{
-      this.y = 1060-this.img0.height;
+      this.y = 1080-this.img0.height;
     }
-  }
-
-  wait(){
-    this.hits = false;
   }
 
   show(a){
@@ -97,9 +93,9 @@ class Penguin {
       this.hits = false;
       image(this.img0, this.x, this.y);
     }else{
-      image(this.img1, this.x, this.y, this.w*2, this.h*2);
+      image(this.img1, this.x, this.y, this.w*1.5, this.h*1.5);
+      setTimeout(wait, 300);
       this.hits = true;
-      setTimeout(wait, 200);
     }
     pop();
   }
